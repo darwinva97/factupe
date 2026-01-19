@@ -1,0 +1,30 @@
+{
+  "name": "@factupe/sunat",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./adapters": "./src/adapters/index.ts",
+    "./builders": "./src/builders/index.ts",
+    "./validators": "./src/validators/index.ts",
+    "./types": "./src/types/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@factupe/database": "workspace:*",
+    "@factupe/types": "workspace:*",
+    "fast-xml-parser": "^4.5.1",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@factupe/typescript-config": "workspace:*",
+    "@types/node": "^22.10.5",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

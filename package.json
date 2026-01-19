@@ -1,0 +1,53 @@
+{
+  "name": "factupe",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sistema de facturación electrónica para SUNAT - Open Source",
+  "license": "MIT",
+  "author": "Factupe Contributors",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/factupe/factupe.git"
+  },
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "test:e2e": "turbo test:e2e",
+    "format": "prettier --write \"**/*.{ts,tsx,md,mdx,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,mdx,json}\"",
+    "db:generate": "pnpm --filter @factupe/database db:generate",
+    "db:migrate": "pnpm --filter @factupe/database db:migrate",
+    "db:push": "pnpm --filter @factupe/database db:push",
+    "db:studio": "pnpm --filter @factupe/database db:studio",
+    "db:seed": "pnpm --filter @factupe/database db:seed",
+    "clean": "turbo clean && rm -rf node_modules",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.3.0",
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.6.9",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "packageManager": "pnpm@9.15.2",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,md,mdx}": [
+      "prettier --write"
+    ]
+  }
+}

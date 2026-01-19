@@ -1,0 +1,14 @@
+{
+  "name": "@factupe/tailwind-config",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./tailwind.config.ts"
+  },
+  "devDependencies": {
+    "tailwindcss": "^4.0.0",
+    "tailwindcss-animate": "^1.0.7"
+  }
+}

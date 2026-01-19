@@ -1,0 +1,25 @@
+{
+  "name": "@factupe/auth",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./config": "./src/config.ts",
+    "./client": "./src/client.ts",
+    "./permissions": "./src/permissions.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@factupe/database": "workspace:*",
+    "better-auth": "^1.1.14"
+  },
+  "devDependencies": {
+    "@factupe/typescript-config": "workspace:*",
+    "@types/node": "^22.10.5",
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@factupe/realtime",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./sse": "./src/sse/index.ts",
+    "./pg-notify": "./src/pg-notify/index.ts",
+    "./client": "./src/client.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@factupe/database": "workspace:*",
+    "postgres": "^3.4.5"
+  },
+  "devDependencies": {
+    "@factupe/typescript-config": "workspace:*",
+    "@types/node": "^22.10.5",
+    "typescript": "^5.7.2"
+  }
+}
