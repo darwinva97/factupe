@@ -41,6 +41,9 @@ importers:
       '@factupe/database':
         specifier: workspace:*
         version: link:../../packages/database
+      '@factupe/realtime':
+        specifier: workspace:*
+        version: link:../../packages/realtime
       '@factupe/sunat':
         specifier: workspace:*
         version: link:../../packages/sunat
@@ -50,6 +53,9 @@ importers:
       '@factupe/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      drizzle-orm:
+        specifier: ^0.38.3
+        version: 0.38.4(@types/react@19.2.8)(kysely@0.28.10)(postgres@3.4.8)(react@19.2.3)
       lucide-react:
         specifier: ^0.469.0
         version: 0.469.0(react@19.2.3)

@@ -11,6 +11,7 @@ import {
   formatCurrency,
 } from '@factupe/ui'
 import { FileText, Users, Package, TrendingUp, Plus } from 'lucide-react'
+import { getDashboardStats, getRecentDocuments } from '@/actions/documents'
 
 export const metadata = {
   title: 'Dashboard',
@@ -21,15 +22,10 @@ export default async function DashboardPage() {
     headers: await headers(),
   })
 
-  // TODO: Fetch real stats from database
-  const stats = {
-    totalDocuments: 156,
-    totalCustomers: 45,
-    totalProducts: 89,
-    monthlyRevenue: 45678.90,
-    pendingDocuments: 12,
-    acceptedDocuments: 144,
-  }
+  const [stats, recentDocs] = await Promise.all([
+    getDashboardStats(),
+    getRecentDocuments(3),
+  ])
 
   return (
     <div className="space-y-6">
@@ -153,37 +149,28 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {/* TODO: Replace with real data */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">F001-00001</p>
-                  <p className="text-xs text-muted-foreground">Cliente Demo S.A.C.</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium">{formatCurrency(1500)}</p>
-                  <p className="text-xs text-success">Aceptado</p>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">B001-00012</p>
-                  <p className="text-xs text-muted-foreground">Juan Perez</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium">{formatCurrency(350)}</p>
-                  <p className="text-xs text-warning">Pendiente</p>
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium">F001-00002</p>
-                  <p className="text-xs text-muted-foreground">Empresa XYZ E.I.R.L.</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium">{formatCurrency(2800)}</p>
-                  <p className="text-xs text-success">Aceptado</p>
-                </div>
-              </div>
+              {recentDocs.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  No hay documentos emitidos
+                </p>
+              ) : (
+                recentDocs.map((doc) => (
+                  <div key={doc.id} className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium">{doc.series}-{doc.number}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {doc.customer?.name || 'Sin cliente'}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium">{formatCurrency(Number(doc.total))}</p>
+                      <p className={`text-xs ${doc.status === 'accepted' ? 'text-success' : doc.status === 'pending' ? 'text-warning' : 'text-muted-foreground'}`}>
+                        {doc.status === 'accepted' ? 'Aceptado' : doc.status === 'pending' ? 'Pendiente' : doc.status === 'draft' ? 'Borrador' : doc.status}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
             <Link href="/documents" className="mt-4 block">
               <Button variant="link" className="w-full">

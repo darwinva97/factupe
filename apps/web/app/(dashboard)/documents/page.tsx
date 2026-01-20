@@ -17,50 +17,11 @@ import {
   formatDate,
 } from '@factupe/ui'
 import { Plus, FileText, Download, Eye } from 'lucide-react'
+import { listDocuments } from '@/actions/documents'
 
 export const metadata = {
   title: 'Documentos',
 }
-
-// TODO: Replace with real data from database
-const documents = [
-  {
-    id: 'doc_1',
-    type: '01',
-    series: 'F001',
-    number: '00001',
-    customer: 'Cliente Demo S.A.C.',
-    issueDate: '2024-01-15',
-    total: 1500,
-    currency: 'PEN',
-    status: 'accepted',
-    sunatStatus: 'accepted',
-  },
-  {
-    id: 'doc_2',
-    type: '03',
-    series: 'B001',
-    number: '00012',
-    customer: 'Juan Perez Garcia',
-    issueDate: '2024-01-14',
-    total: 350,
-    currency: 'PEN',
-    status: 'pending',
-    sunatStatus: null,
-  },
-  {
-    id: 'doc_3',
-    type: '01',
-    series: 'F001',
-    number: '00002',
-    customer: 'Empresa XYZ E.I.R.L.',
-    issueDate: '2024-01-13',
-    total: 2800,
-    currency: 'PEN',
-    status: 'accepted',
-    sunatStatus: 'accepted',
-  },
-]
 
 const documentTypeLabels: Record<string, string> = {
   '01': 'Factura',
@@ -78,7 +39,8 @@ const statusLabels: Record<string, { label: string; variant: 'default' | 'succes
   voided: { label: 'Anulado', variant: 'destructive' },
 }
 
-export default function DocumentsPage() {
+export default async function DocumentsPage() {
+  const { data: documents = [] } = await listDocuments()
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -116,46 +78,54 @@ export default function DocumentsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {documents.map((doc) => {
-                const status = statusLabels[doc.status] || statusLabels.draft
-                return (
-                  <TableRow key={doc.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-muted-foreground" />
-                        <div>
-                          <p className="font-medium">
-                            {doc.series}-{doc.number}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {documentTypeLabels[doc.type] || doc.type}
-                          </p>
+              {documents.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    No hay documentos emitidos
+                  </TableCell>
+                </TableRow>
+              ) : (
+                documents.map((doc) => {
+                  const status = statusLabels[doc.status] || statusLabels.draft
+                  return (
+                    <TableRow key={doc.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-muted-foreground" />
+                          <div>
+                            <p className="font-medium">
+                              {doc.series}-{doc.number}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {documentTypeLabels[doc.type] || doc.type}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{doc.customer}</TableCell>
-                    <TableCell>{formatDate(doc.issueDate)}</TableCell>
-                    <TableCell className="text-right font-medium">
-                      {formatCurrency(doc.total, doc.currency)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={status.variant}>{status.label}</Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Link href={`/documents/${doc.id}`}>
+                      </TableCell>
+                      <TableCell>{doc.customer?.name || '-'}</TableCell>
+                      <TableCell>{formatDate(doc.issueDate)}</TableCell>
+                      <TableCell className="text-right font-medium">
+                        {formatCurrency(Number(doc.total), doc.currency)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={status.variant}>{status.label}</Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Link href={`/documents/${doc.id}`}>
+                            <Button variant="ghost" size="icon">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </Link>
                           <Button variant="ghost" size="icon">
-                            <Eye className="h-4 w-4" />
+                            <Download className="h-4 w-4" />
                           </Button>
-                        </Link>
-                        <Button variant="ghost" size="icon">
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })
+              )}
             </TableBody>
           </Table>
         </CardContent>

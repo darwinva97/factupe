@@ -16,9 +16,11 @@
   "dependencies": {
     "@factupe/auth": "workspace:*",
     "@factupe/database": "workspace:*",
+    "@factupe/realtime": "workspace:*",
     "@factupe/sunat": "workspace:*",
     "@factupe/types": "workspace:*",
     "@factupe/ui": "workspace:*",
+    "drizzle-orm": "^0.38.3",
     "lucide-react": "^0.469.0",
     "next": "^16.1.2",
     "react": "^19.2.0",

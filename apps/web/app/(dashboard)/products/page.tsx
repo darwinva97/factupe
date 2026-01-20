@@ -16,47 +16,11 @@ import {
   formatCurrency,
 } from '@factupe/ui'
 import { Plus, Package, Edit, Trash2 } from 'lucide-react'
+import { listProducts } from '@/actions/products'
 
 export const metadata = {
   title: 'Productos',
 }
-
-// TODO: Replace with real data from database
-const products = [
-  {
-    id: 'prd_1',
-    code: 'PROD001',
-    name: 'Producto de ejemplo 1',
-    unitPrice: 100,
-    currency: 'PEN',
-    taxType: '10',
-    category: 'General',
-    isService: false,
-    isActive: true,
-  },
-  {
-    id: 'prd_2',
-    code: 'SERV001',
-    name: 'Servicio de consultoria',
-    unitPrice: 500,
-    currency: 'PEN',
-    taxType: '10',
-    category: 'Servicios',
-    isService: true,
-    isActive: true,
-  },
-  {
-    id: 'prd_3',
-    code: 'PROD002',
-    name: 'Producto exonerado',
-    unitPrice: 50,
-    currency: 'PEN',
-    taxType: '20',
-    category: 'Exonerados',
-    isService: false,
-    isActive: true,
-  },
-]
 
 const taxTypeLabels: Record<string, string> = {
   '10': 'Gravado',
@@ -65,7 +29,8 @@ const taxTypeLabels: Record<string, string> = {
   '40': 'Exportacion',
 }
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const { data: products = [] } = await listProducts()
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -104,50 +69,58 @@ export default function ProductsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Package className="h-4 w-4 text-muted-foreground" />
-                      <div>
-                        <span className="font-medium">{product.name}</span>
-                        {product.isService && (
-                          <Badge variant="secondary" className="ml-2">
-                            Servicio
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-mono text-sm">
-                    {product.code}
-                  </TableCell>
-                  <TableCell>{product.category || '-'}</TableCell>
-                  <TableCell className="text-right font-medium">
-                    {formatCurrency(product.unitPrice, product.currency)}
-                  </TableCell>
-                  <TableCell>
-                    {taxTypeLabels[product.taxType] || product.taxType}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={product.isActive ? 'success' : 'secondary'}>
-                      {product.isActive ? 'Activo' : 'Inactivo'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Link href={`/products/${product.id}/edit`}>
-                        <Button variant="ghost" size="icon">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                      <Button variant="ghost" size="icon">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+              {products.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                    No hay productos registrados
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : (
+                products.map((product) => (
+                  <TableRow key={product.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Package className="h-4 w-4 text-muted-foreground" />
+                        <div>
+                          <span className="font-medium">{product.name}</span>
+                          {product.isService && (
+                            <Badge variant="secondary" className="ml-2">
+                              Servicio
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-mono text-sm">
+                      {product.code}
+                    </TableCell>
+                    <TableCell>{product.category || '-'}</TableCell>
+                    <TableCell className="text-right font-medium">
+                      {formatCurrency(Number(product.unitPrice), product.currency)}
+                    </TableCell>
+                    <TableCell>
+                      {taxTypeLabels[product.taxType || '10'] || product.taxType}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={product.isActive ? 'success' : 'secondary'}>
+                        {product.isActive ? 'Activo' : 'Inactivo'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Link href={`/products/${product.id}/edit`}>
+                          <Button variant="ghost" size="icon">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                        <Button variant="ghost" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>

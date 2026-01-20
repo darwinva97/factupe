@@ -29,6 +29,16 @@ import { sendEvent } from '@factupe/realtime'
 import type { SunatDocumentType } from '@factupe/database/schema'
 
 /**
+ * Serialize data for client transfer
+ * Next.js cannot serialize Date objects across the server-client boundary
+ */
+function serialize<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj, (_, value) =>
+    value instanceof Date ? value.toISOString() : value
+  ))
+}
+
+/**
  * Document item input schema
  */
 const documentItemSchema = z.object({
@@ -654,7 +664,7 @@ export async function getDocument(id: string) {
     return { success: false, error: 'Documento no encontrado' }
   }
 
-  return { success: true, data: doc }
+  return { success: true, data: serialize(doc) }
 }
 
 /**
@@ -672,27 +682,27 @@ export async function listDocuments(params: {
   const session = await getSession()
   const tenantId = session.user.tenantId!
 
-  const page = params.page || 1
-  const pageSize = Math.min(params.pageSize || 20, 100)
+  const page = params?.page || 1
+  const pageSize = Math.min(params?.pageSize || 20, 100)
   const offset = (page - 1) * pageSize
 
   const docs = await db.query.documents.findMany({
     where: (d, { eq, and, gte, lte, or, like }) => {
       const conditions = [eq(d.tenantId, tenantId)]
 
-      if (params.type) {
+      if (params?.type) {
         conditions.push(eq(d.type, params.type as SunatDocumentType))
       }
 
-      if (params.status) {
+      if (params?.status) {
         conditions.push(eq(d.status, params.status as any))
       }
 
-      if (params.startDate) {
+      if (params?.startDate) {
         conditions.push(gte(d.issueDate, new Date(params.startDate)))
       }
 
-      if (params.endDate) {
+      if (params?.endDate) {
         conditions.push(lte(d.issueDate, new Date(params.endDate)))
       }
 
@@ -720,7 +730,7 @@ export async function listDocuments(params: {
 
   return {
     success: true,
-    data: docs,
+    data: docs.map(serialize),
     meta: {
       page,
       pageSize,
@@ -814,4 +824,68 @@ export async function resendDocument(id: string) {
   })
 
   return { success: true, message: 'Documento enviado a SUNAT' }
+}
+
+/**
+ * Get dashboard statistics
+ */
+export async function getDashboardStats() {
+  const session = await getSession()
+  const tenantId = session.user.tenantId!
+
+  const now = new Date()
+  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
+
+  const [docsStats] = await db
+    .select({
+      totalDocuments: sql<number>`count(*)`,
+      pendingDocuments: sql<number>`count(*) filter (where ${documents.status} = 'pending' or ${documents.status} = 'draft')`,
+      acceptedDocuments: sql<number>`count(*) filter (where ${documents.status} = 'accepted')`,
+      monthlyRevenue: sql<number>`coalesce(sum(${documents.total}::numeric) filter (where ${documents.status} = 'accepted' and ${documents.issueDate} >= ${firstDayOfMonth}::date), 0)`,
+    })
+    .from(documents)
+    .where(eq(documents.tenantId, tenantId));
+
+  const [customersCount] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(customers)
+    .where(and(eq(customers.tenantId, tenantId), eq(customers.isActive, true)))
+
+  const [productsCount] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(products)
+    .where(and(eq(products.tenantId, tenantId), eq(products.isActive, true)))
+
+  return {
+    totalDocuments: Number(docsStats.totalDocuments),
+    pendingDocuments: Number(docsStats.pendingDocuments),
+    acceptedDocuments: Number(docsStats.acceptedDocuments),
+    monthlyRevenue: Number(docsStats.monthlyRevenue),
+    totalCustomers: Number(customersCount.count),
+    totalProducts: Number(productsCount.count),
+  }
+}
+
+/**
+ * Get recent documents for dashboard
+ */
+export async function getRecentDocuments(limit: number = 5) {
+  const session = await getSession()
+  const tenantId = session.user.tenantId!
+
+  const docs = await db.query.documents.findMany({
+    where: (d, { eq }) => eq(d.tenantId, tenantId),
+    with: {
+      customer: {
+        columns: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+    orderBy: (d, { desc }) => [desc(d.createdAt)],
+    limit,
+  })
+
+  return docs.map(serialize)
 }
