@@ -2,14 +2,19 @@
   "name": "@factupe/sunat",
   "version": "0.1.0",
   "private": true,
+  "description": "SUNAT integration package for electronic billing in Peru",
   "license": "MIT",
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./adapters": "./src/adapters/index.ts",
+    "./adapters/direct": "./src/adapters/direct/index.ts",
+    "./adapters/nubefact": "./src/adapters/nubefact/index.ts",
     "./builders": "./src/builders/index.ts",
     "./validators": "./src/validators/index.ts",
-    "./types": "./src/types/index.ts"
+    "./types": "./src/types/index.ts",
+    "./pdf": "./src/pdf/invoice-pdf.tsx",
+    "./utils": "./src/utils/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -18,13 +23,21 @@
   "dependencies": {
     "@factupe/database": "workspace:*",
     "@factupe/types": "workspace:*",
+    "@react-pdf/renderer": "^4.1.6",
     "fast-xml-parser": "^4.5.1",
+    "node-forge": "^1.3.1",
     "zod": "^3.24.1"
   },
   "devDependencies": {
     "@factupe/typescript-config": "workspace:*",
     "@types/node": "^22.10.5",
+    "@types/node-forge": "^1.3.11",
+    "@types/react": "^19.2.0",
+    "react": "^19.2.0",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
+  },
+  "peerDependencies": {
+    "react": "^19.2.0"
   }
 }

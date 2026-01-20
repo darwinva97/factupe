@@ -4,8 +4,8 @@ Sistema de facturación electrónica para SUNAT - Open Source
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](https://www.typescriptlang.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.1-black)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.2-61DAFB)](https://react.dev/)
 
 ## Características
 
@@ -19,7 +19,7 @@ Sistema de facturación electrónica para SUNAT - Open Source
 
 ## Stack Tecnológico
 
-- **Framework**: Next.js 16 + React 19 + React Compiler
+- **Framework**: Next.js 16.1 + React 19.2 + React Compiler 1.0
 - **UI**: shadcn/ui + Tailwind CSS
 - **Auth**: better-auth
 - **Database**: PostgreSQL + Drizzle ORM
@@ -76,11 +76,15 @@ pnpm db:push
 # Sembrar datos iniciales
 pnpm db:seed
 
-# Iniciar en desarrollo
+# Iniciar en desarrollo (puerto 5050)
 pnpm dev
+
+# Si el puerto 5050 está ocupado, usar alternativas
+pnpm dev:5051  # Puerto 5051
+pnpm dev:5052  # Puerto 5052
 ```
 
-Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
+Abre [http://localhost:5050](http://localhost:5050) en tu navegador.
 
 ### Credenciales de Demo
 

@@ -28,6 +28,8 @@ export {
 
 export { sessions, sessionsRelations, type Session, type NewSession } from './sessions'
 
+export { accounts, accountsRelations, type Account, type NewAccount } from './accounts'
+
 export {
   customers,
   customersRelations,

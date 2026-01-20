@@ -8,6 +8,7 @@
  */
 
 import { betterAuth } from 'better-auth'
+import { admin } from 'better-auth/plugins'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { db } from '@factupe/database/client'
 import * as schema from '@factupe/database/schema'
@@ -29,6 +30,7 @@ export const auth = betterAuth({
     schema: {
       user: schema.users,
       session: schema.sessions,
+      account: schema.accounts,
     },
   }),
 
@@ -81,6 +83,8 @@ export const auth = betterAuth({
     process.env.BETTER_AUTH_URL || 'http://localhost:3000',
     process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   ],
+
+  plugins: [admin()],
 })
 
 export type Auth = typeof auth

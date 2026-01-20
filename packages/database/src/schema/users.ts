@@ -51,6 +51,15 @@ export const users = pgTable('users', {
   /** Whether user account is active */
   isActive: boolean('is_active').default(true),
 
+  /** Whether user is banned (required by better-auth admin plugin) */
+  banned: boolean('banned').default(false),
+
+  /** Reason for ban (required by better-auth admin plugin) */
+  banReason: text('ban_reason'),
+
+  /** Ban expiration timestamp (required by better-auth admin plugin) */
+  banExpires: timestamp('ban_expires', { withTimezone: true }),
+
   /** Last login timestamp */
   lastLoginAt: timestamp('last_login_at', { withTimezone: true }),
 

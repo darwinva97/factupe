@@ -2,17 +2,14 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-
-  experimental: {
-    reactCompiler: true,
-    ppr: true,
-    typedRoutes: true,
-  },
+  typedRoutes: true,
+  reactCompiler: true,
 
   transpilePackages: [
     '@factupe/ui',
     '@factupe/database',
     '@factupe/auth',
+    '@factupe/sunat',
     '@factupe/types',
   ],
 

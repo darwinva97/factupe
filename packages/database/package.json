@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@factupe/typescript-config": "workspace:*",
+    "better-auth": "^1.1.14",
     "@types/node": "^22.10.5",
     "dotenv": "^16.4.7",
     "drizzle-kit": "^0.30.1",

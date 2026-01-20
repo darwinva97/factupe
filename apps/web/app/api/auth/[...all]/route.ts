@@ -5,6 +5,6 @@
  */
 
 import { auth } from '@factupe/auth/config'
-import { toNextJsHandler } from 'better-auth/next-js'
+import { toNextJsHandler } from '@factupe/auth'
 
 export const { GET, POST } = toNextJsHandler(auth)

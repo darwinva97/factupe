@@ -391,7 +391,7 @@ export class FactupeClient {
     })
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}))
+      const error = await response.json().catch(() => ({})) as { message?: string; code?: string; details?: unknown }
       throw new FactupeApiError(
         response.status,
         error.message || 'API request failed',

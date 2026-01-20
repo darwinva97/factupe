@@ -51,6 +51,7 @@
  */
 
 export { auth, type Auth, type Session, type User } from './config'
+export { toNextJsHandler } from 'better-auth/next-js'
 export {
   PERMISSIONS,
   ROLE_PERMISSIONS,

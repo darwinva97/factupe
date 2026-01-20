@@ -7,10 +7,34 @@
  * pnpm db:seed
  * ```
  */
-
-import 'dotenv/config'
+import "./env";
+import { betterAuth } from 'better-auth'
+import { admin } from 'better-auth/plugins'
+import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { db, connection } from '../client'
-import { tenants, users, documentSeries, products, customers } from '../schema'
+import * as schema from '../schema'
+import { tenants, documentSeries, products, customers } from '../schema'
+
+// Create auth instance for seeding (avoids circular dependency with @factupe/auth)
+const auth = betterAuth({
+  database: drizzleAdapter(db, {
+    provider: 'pg',
+    schema: {
+      user: schema.users,
+      session: schema.sessions,
+      account: schema.accounts,
+    },
+  }),
+  emailAndPassword: { enabled: true },
+  user: {
+    additionalFields: {
+      tenantId: { type: 'string', required: true },
+      role: { type: 'string', required: true, defaultValue: 'viewer' },
+      permissions: { type: 'string[]', required: false, defaultValue: [] },
+    },
+  },
+  plugins: [admin()],
+})
 
 async function seed() {
   console.log('🌱 Seeding database...')
@@ -42,22 +66,24 @@ async function seed() {
     })
     .returning()
 
+  if (!tenant) {
+    throw new Error('Failed to create demo tenant')
+  }
+
   console.log('✅ Created demo tenant:', tenant.name)
 
   // Create demo user (password: demo123)
-  const [user] = await db
-    .insert(users)
-    .values({
-      tenantId: tenant.id,
+  const user = await auth.api.createUser({
+    body: {
       email: 'admin@factupe.com',
+      password: 'demo123',
       name: 'Admin Demo',
       role: 'owner',
-      // Note: In production, use proper password hashing via better-auth
-      passwordHash: '$2a$10$K7L1OJ45/4Y2nIvhRVpCe.FSmhDdWoXehVzJptJ/op0lSsvqNu/1u', // demo123
-      emailVerified: true,
-      isActive: true,
-    })
-    .returning()
+      data: {
+        tenantId: tenant.id,
+      },
+    },
+  })
 
   console.log('✅ Created demo user:', user.email)
 
